@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - Quản lý Lớp học</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            background-color: #fff;
+            padding: 2.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .login-container h1 {
+            color: #333;
+            margin-bottom: 2rem;
+        }
+        .login-form input {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box; 
+        }
+        .login-form button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .login-form button:hover {
+            background-color: #0056b3;
+        }
+        #error-message {
+            color: #dc3545;
+            margin-top: 1rem;
+            display: none; 
+        }
+        /* CSS MỚI CHO LINK ĐĂNG KÝ */
+        .register-link {
+            margin-top: 1.5rem;
+            font-size: 0.9em;
+        }
+        .register-link a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <h1>Đăng nhập</h1>
+        <form id="login-form" class="login-form">
+            <div>
+                <input type="email" id="email" placeholder="Email" required 
+                       value="hung.pham@student.com">
+            </div>
+            <div>
+                <input type="password" id="password" placeholder="Mật khẩu" required
+                       value="123456">
+            </div>
+            <button type="submit">Đăng nhập</button>
+            <div id="error-message"></div>
+        </form>
+        
+        <div class="register-link">
+            Chưa có tài khoản? <a href="register.html">Đăng ký ngay</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('login-form').addEventListener('submit', async function(e) {
+            e.preventDefault(); 
+
+            const email = document.getElementById('email').value;
+            const matkhau = document.getElementById('password').value;
+            const errorMessageDiv = document.getElementById('error-message');
+            
+            try {
+                const response = await fetch('http://localhost:3001/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, matkhau })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    window.location.href = 'index.html';
+                } else {
+                    errorMessageDiv.textContent = data.error || 'Đã xảy ra lỗi.';
+                    errorMessageDiv.style.display = 'block';
+                }
+
+            } catch (error) {
+                console.error('Lỗi khi đăng nhập:', error);
+                errorMessageDiv.textContent = 'Không thể kết nối đến máy chủ.';
+                errorMessageDiv.style.display = 'block';
+            }
+        });
+    </script>
+
+</body>
+</html>

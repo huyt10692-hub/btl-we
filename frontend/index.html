@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Lớp học</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>Lớp Học Trực Tuyến</h1>
+            <div class="header-info">
+                <h2 id="welcome-message">Chào, <span id="user-name"></span>!</h2>
+                <button class="btn-logout" onclick="logout()">Đăng xuất</button>
+            </div>
+        </div>
+        
+        <div class="tab-nav">
+            <button class="tab-button" id="btn-tab-register" onclick="openTab(event, 'register-section')">Đăng ký Khóa học</button>
+            <button class="tab-button" id="btn-tab-schedule" onclick="openTab(event, 'schedule-section')">Buổi học / Khóa học</button>
+            <button class="tab-button" id="btn-tab-attendance" onclick="openTab(event, 'attendance-section')">Điểm danh</button>
+            <button class="tab-button" id="btn-tab-stats" onclick="openTab(event, 'stats-section')" style="display:none;">Thống kê</button>
+        </div>
+
+        <section id="register-section" class="tab-content">
+            <h3>Danh sách Khóa học</h3>
+            <div id="all-courses-lookup-list"></div>
+            <hr style="margin: 25px 0;">
+            <h3>Đăng ký</h3>
+            <p>Nhập thông tin của khóa học để đăng ký.</p>
+            <div class="register-form">
+                <label for="reg-mahv">Mã Học Viên:</label>
+                <input type="text" id="reg-mahv" placeholder="VD: HV001" readonly>
+                
+                <label for="reg-makh">Thông Tin Khóa Học:</label>
+                <input type="text" id="reg-makh" placeholder="VD:Mã Khóa Hoc/Tên Khóa Học" list="khoahoc-suggestions">
+                <datalist id="khoahoc-suggestions">
+                    </datalist>
+                
+                <button class="btn-primary" onclick="registerCourse()">Đăng ký</button>
+                <p id="register-message" class="form-message"></p>
+            </div>
+        </section>
+
+        <section id="schedule-section" class="tab-content">
+            <h2 id="my-courses-title">Khóa học Của tôi</h2>
+            <p id="schedule-message" class="form-message"></p> 
+            <div id="my-courses-list" class="course-list"></div>
+            <hr style="margin: 30px 0;">
+            <h2 id="lecture-list-title">Danh sách Buổi học</h2>
+            <div id="lecture-list-container">
+                <p>Vui lòng chọn "Xem buổi học" từ một khóa học ở trên.</p>
+            </div>
+        </section>
+
+        <section id="attendance-section" class="tab-content">
+            <div id="student-attendance-view">
+                <h2>Điểm danh Online</h2>
+                <div style="display: flex; flex-direction: column; max-width: 400px;">
+                    <label for="student-course-select" style="font-weight: 600; margin-bottom: 5px;">1. Chọn Khóa học:</label>
+                    <select id="student-course-select" onchange="loadLecturesForStudentAttendance(this.value)">
+                        <option value="">-- Khóa học của bạn --</option>
+                    </select>
+
+                    <label for="student-lecture-select" style="font-weight: 600; margin-bottom: 5px; margin-top: 15px;">2. Chọn Buổi học:</label>
+                    <select id="student-lecture-select" disabled>
+                        <option value="">-- Vui lòng chọn khóa học --</option>
+                    </select>
+
+                    <label for="student-status-select" style="font-weight: 600; margin-bottom: 5px; margin-top: 15px;">3. Trạng thái:</label>
+                    <select id="student-status-select">
+                        <option value="Có mặt">Có mặt</option>
+                        <option value="Vắng">Vắng</option>
+                    </select>
+                    
+                    <label for="student-notes" style="font-weight: 600; margin-bottom: 5px; margin-top: 15px;">4. Ghi chú (nếu có):</label>
+                    <input type="text" id="student-notes" placeholder="Ghi chú (nếu có)">
+
+                    <button class="btn-attendance" style="margin-top: 20px;" onclick="submitAttendance()">Xác nhận Điểm danh</button>
+                    <p id="attendance-message" class="form-message"></p>
+                </div>
+            </div>
+            
+            <div id="teacher-attendance-view" style="display:none;">
+                <h2>Quản lý Điểm danh</h2>
+                <div>
+                    <label for="teacher-course-select" style="font-weight: 600;">Chọn Khóa học:</label>
+                    <select id="teacher-course-select" onchange="loadLecturesForTeacher(this.value)">
+                        <option value="">-- Vui lòng chọn --</option>
+                    </select>
+                </div>
+                <div style="margin-top: 15px;">
+                    <label for="teacher-lecture-select" style="font-weight: 600;">Chọn Buổi học:</label>
+                    <select id="teacher-lecture-select" onchange="loadAttendanceList(this.value)">
+                        <option value="">-- Vui lòng chọn khóa học --</option>
+                    </select>
+                </div>
+                <hr style="margin: 25px 0;">
+                <div id="attendance-list-container">
+                    </div>
+            </div>
+        </section>
+        
+        <section id="stats-section" class="tab-content">
+            <h2>Thống kê Sĩ số Khóa học</h2>
+            <div id="stats-container">
+                </div>
+        </section>
+    </div>
+
+    <script src="script.js" defer></script>
+
+</body>
+</html>

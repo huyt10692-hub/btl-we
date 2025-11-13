@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký - Quản lý Lớp học</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="register-container">
+        <h1>Tạo tài khoản</h1>
+        <form id="register-form" class="register-form">
+            <div>
+                <input type="text" id="maHV" placeholder="Mã Học Viên" required>
+            </div>
+             <div>
+                <input type="text" id="hoTen" placeholder="Họ và Tên" required>
+            </div>
+            
+            <div>
+                <input 
+                    type="text" 
+                    id="ngaySinh" 
+                    placeholder="Ngày Sinh" 
+                    required 
+                    onfocus="this.type='date'" 
+                    onblur="if(!this.value) {this.type='text'}"
+                >
+            </div>
+            
+            <div>
+                <input type="email" id="email" placeholder="Email" required>
+            </div>
+            <div>
+                <input type="password" id="matKhau" placeholder="Mật khẩu" required>
+            </div>
+            <div>
+                <input type="password" id="confirmMatKhau" placeholder="Xác nhận mật khẩu" required>
+            </div>
+            <button type="submit">Đăng ký</button>
+            <div id="message"></div>
+        </form>
+        <div class="login-link">
+            Đã có tài khoản? <a href="login.html">Đăng nhập ngay</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('register-form').addEventListener('submit', async function(e) {
+            e.preventDefault(); 
+
+            const maHV = document.getElementById('maHV').value;
+            const hoTen = document.getElementById('hoTen').value;
+            const ngaySinh = document.getElementById('ngaySinh').value; 
+            const email = document.getElementById('email').value;
+            const matKhau = document.getElementById('matKhau').value;
+            const confirmMatKhau = document.getElementById('confirmMatKhau').value;
+            const messageDiv = document.getElementById('message');
+
+            if (matKhau !== confirmMatKhau) {
+                messageDiv.textContent = 'Mật khẩu xác nhận không khớp!';
+                messageDiv.className = 'message-error';
+                messageDiv.style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:3001/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ maHV, hoTen, email, matKhau, ngaySinh }) 
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    messageDiv.textContent = data.message + ' Bạn sẽ được chuyển đến trang đăng nhập sau 3 giây.';
+                    messageDiv.className = 'message-success';
+                    messageDiv.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 3000);
+
+                } else {
+                    messageDiv.textContent = data.error || 'Đã xảy ra lỗi.';
+                    messageDiv.className = 'message-error';
+                    messageDiv.style.display = 'block';
+                }
+
+            } catch (error) {
+                console.error('Lỗi khi đăng ký:', error);
+                messageDiv.textContent = 'Không thể kết nối đến máy chủ.';
+                messageDiv.className = 'message-error';
+                messageDiv.style.display = 'block';
+            }
+        });
+    </SCript>
+
+</body>
+</html>
