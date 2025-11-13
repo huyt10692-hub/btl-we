@@ -1,0 +1,67 @@
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+-- ===== 1. TẠO BẢNG GIAOVIEN =====
+CREATE TABLE `GiaoVien` (
+    `MaGV` VARCHAR(20) NOT NULL PRIMARY KEY,
+    `HoTen` VARCHAR(100) NOT NULL,
+    `Email` VARCHAR(100) NOT NULL UNIQUE,
+    `MatKhau` VARCHAR(255) NOT NULL,
+    `ChuyenMon` VARCHAR(100)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ===== 2. TẠO BẢNG HOCVIEN =====
+CREATE TABLE `HocVien` (
+    `MaHV` VARCHAR(20) NOT NULL PRIMARY KEY,
+    `HoTen` VARCHAR(100) NOT NULL,
+    `NgaySinh` DATE,
+    `Email` VARCHAR(100) NOT NULL UNIQUE,
+    `MatKhau` VARCHAR(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ===== 3. TẠO BẢNG KHOAHOC =====
+CREATE TABLE `KhoaHoc` (
+    `MaKH` VARCHAR(20) NOT NULL PRIMARY KEY,
+    `TenKH` VARCHAR(100) NOT NULL,
+    `MoTa` TEXT,
+    `MaGV` VARCHAR(20),
+    FOREIGN KEY (`MaGV`) REFERENCES `GiaoVien`(`MaGV`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ===== 4. TẠO BẢNG BAIGIANG (ĐÃ CẬP NHẬT) =====
+CREATE TABLE `BaiGiang` (
+    `MaBG` VARCHAR(20) NOT NULL PRIMARY KEY,
+    `TieuDe` VARCHAR(100) NOT NULL,
+    `ThoiGianHoc` VARCHAR(50),
+    `NoiDungBG` TEXT,
+    `ThoiGianBatDau` DATETIME NULL COMMENT 'Thời gian buổi học bắt đầu',
+    `LinkLopHoc` VARCHAR(255) NULL COMMENT 'Link Google Meet/Zoom',
+    `MaKH` VARCHAR(20),
+    FOREIGN KEY (`MaKH`) REFERENCES `KhoaHoc`(`MaKH`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ===== 5. TẠO BẢNG DANGKYHOC =====
+CREATE TABLE `DangKyHoc` (
+    `MaDangKy` INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `MaHV` VARCHAR(20),
+    `MaKH` VARCHAR(20),
+    `NgayDangKy` DATE DEFAULT CURRENT_DATE(),
+    -- Thêm UNIQUE để học viên không đăng ký 1 khóa 2 lần (Phòng lỗi trùng lặp)
+    UNIQUE KEY `unique_dangky` (`MaHV`,`MaKH`),
+    FOREIGN KEY (`MaHV`) REFERENCES `HocVien`(`MaHV`),
+    FOREIGN KEY (`MaKH`) REFERENCES `KhoaHoc`(`MaKH`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ===== 6. TẠO BẢNG DIEMDANH =====
+CREATE TABLE `DiemDanh` (
+    `MaHV` VARCHAR(20) NOT NULL,
+    `MaBG` VARCHAR(20) NOT NULL,
+    `TrangThai` VARCHAR(50),
+    `GhiChu` TEXT,
+    PRIMARY KEY (`MaHV`, `MaBG`),
+    FOREIGN KEY (`MaHV`) REFERENCES `HocVien`(`MaHV`),
+    FOREIGN KEY (`MaBG`) REFERENCES `BaiGiang`(`MaBG`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+COMMIT;
